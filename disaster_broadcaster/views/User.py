@@ -58,12 +58,15 @@ class UserViewset(viewsets.ViewSet):
         serializer.save()
       return Response(serializer.data, status=status.HTTP_200_OK)
     else:
-      # if request is for resetting password
-      request.data['password'] = new_password
-      serializer = UserResetPasswordSerializer(user, request.data)
-      if serializer.is_valid(raise_exception=True):
-        serializer.save()
-      return Response({}, status=status.HTTP_200_OK)
+      if request.user.id == user.id:
+        # if request is for resetting password
+        request.data['password'] = new_password
+        serializer = UserResetPasswordSerializer(user, request.data)
+        if serializer.is_valid(raise_exception=True):
+          serializer.save()
+        return Response({}, status=status.HTTP_200_OK)
+      else:
+        return Response({}, status=status.HTTP_401_UNAUTHORIZED)
 
 
   # DELETE
